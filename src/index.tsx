@@ -2,7 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
-import "normalize.css";
+
+import "./assets/styles/reset.css";
+import "./assets/styles/font/font.css";
 
 import App from "./App";
 
