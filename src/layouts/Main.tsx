@@ -12,6 +12,7 @@ function Main({ children }: Props) {
 const MainStyled = styled.main`
   max-width: 1130px;
   margin: 40px auto;
+  color: ${({ theme }) => theme.palette.black};
 `;
 
 export default Main;
