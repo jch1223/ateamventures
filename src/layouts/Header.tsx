@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import logoImg from "../assets/logo.png";
-import vectorImg from "../assets/vector.png";
+import logoImg from "../assets/images/logo.png";
+import vectorImg from "../assets/images/vector.png";
 
 function Header() {
   return (
