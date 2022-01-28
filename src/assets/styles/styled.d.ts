@@ -3,7 +3,13 @@ import "styled-components";
 declare module "styled-components" {
   export interface DefaultTheme {
     palette: {
-      [color]: string;
+      darkenBlue: string;
+      blue: string;
+      lightenBlue: string;
+      yellow: string;
+      gray: string;
+      lightenGray: string;
+      white: string;
     };
   }
 }
