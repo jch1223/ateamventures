@@ -1,10 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import EstimateCard from "../components/EstimateCard";
+
+import { getEstimates } from "../api/requests";
+import useFetch from "../hooks/useFetch";
 
 import Layout from "../layouts/Layout";
+import EstimateCard, { EstimateType } from "../components/EstimateCard";
 
 function Home() {
+  const {
+    data: estimatesData,
+    isLoading,
+    isError,
+    error,
+  } = useFetch(getEstimates);
+  console.log(estimatesData);
+
   return (
     <Layout>
       <TopContent>
@@ -20,7 +31,9 @@ function Home() {
         </div>
 
         <div>
-          <EstimateCard />
+          {estimatesData?.map((estimate: EstimateType) => {
+            return <EstimateCard key={estimate.id} estimateData={estimate} />;
+          })}
         </div>
       </article>
     </Layout>

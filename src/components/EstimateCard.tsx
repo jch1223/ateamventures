@@ -3,44 +3,66 @@ import styled from "styled-components";
 
 import Button from "./Button";
 
-function EstimateCard() {
+export interface EstimateType {
+  amount: number;
+  client: string;
+  count: number;
+  due: string;
+  id: number;
+  material: string[];
+  method: string[];
+  status: string;
+  title: string;
+}
+
+interface EstimateCardProps {
+  estimateData: EstimateType;
+}
+
+function EstimateCard({ estimateData }: EstimateCardProps) {
+  const addCommaReducer = (acc: string, curr: string) => `${acc}, ${curr}`;
+
   return (
     <EstimateCardStyled>
       <Header>
-        <h2>자동차 시제품 제작</h2>
-        <ConsultingTag>상담중</ConsultingTag>
-        <p className="customer">A 고객사</p>
-        <p className="due-date">2020.12.14까지 납기</p>
+        <h2>{estimateData.title}</h2>
+        {estimateData.status === "상담중" && (
+          <ConsultingTag>상담중</ConsultingTag>
+        )}
+        <p className="client">{estimateData.client}</p>
+        <p className="due-date">{estimateData.due}까지 납기</p>
       </Header>
 
       <Content>
         <Row>
           <div className="summary">도면개수</div>
-          <div className="description">2개</div>
+          <div className="description">{estimateData.count}개</div>
         </Row>
         <Row>
-          <div className="summary">도면개수</div>
-          <div className="description">2개</div>
+          <div className="summary">총 수량</div>
+          <div className="description">{estimateData.amount}개</div>
         </Row>
         <Row>
-          <div className="summary">도면개수</div>
-          <div className="description">2개</div>
+          <div className="summary">가공방식</div>
+          <div className="description">
+            {estimateData.method.reduce(addCommaReducer)}
+          </div>
         </Row>
         <Row>
-          <div className="summary">도면개수</div>
-          <div className="description">2개</div>
+          <div className="summary">재료</div>
+          <div className="description">
+            {estimateData.material.reduce(addCommaReducer)}
+          </div>
         </Row>
       </Content>
 
-      <Bottom>
+      <div>
         <Button>요청 내역 보기</Button>
         <Button outline>채팅하기</Button>
-      </Bottom>
+      </div>
     </EstimateCardStyled>
   );
 }
-
-const Bottom = styled.div``;
 
 const Row = styled.div`
   display: flex;
@@ -90,7 +112,7 @@ const Header = styled.div`
     font-weight: 600;
   }
 
-  .customer {
+  .client {
     margin-bottom: 24px;
     line-height: 20px;
     font-weight: 500;
