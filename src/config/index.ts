@@ -1,1 +1,1 @@
-export const API_SERVER = "http://localhost:3004";
+export const API_SERVER = process.env.REACT_APP_API_SERVER;
