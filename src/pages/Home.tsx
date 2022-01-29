@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { getEstimates } from "../api/requests";
@@ -14,7 +14,13 @@ function Home() {
     isError,
     error,
   } = useFetch(getEstimates);
-  console.log(estimatesData);
+
+  useEffect(() => {
+    if (isError) {
+      console.error(error);
+      alert("어플리케이션에 문제가 발생했습니다.");
+    }
+  }, [isError, error]);
 
   return (
     <Layout>
@@ -30,15 +36,21 @@ function Home() {
           <div>상담 중인 요청</div>
         </div>
 
-        <div>
+        <EstimatesWrap>
           {estimatesData?.map((estimate: EstimateType) => {
             return <EstimateCard key={estimate.id} estimateData={estimate} />;
           })}
-        </div>
+        </EstimatesWrap>
       </article>
     </Layout>
   );
 }
+
+const EstimatesWrap = styled.section`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+`;
 
 const TopContent = styled.section`
   margin-bottom: 30px;
