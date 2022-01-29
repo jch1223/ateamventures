@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+import Button from "./Button";
+
 function EstimateCard() {
   return (
     <EstimateCardStyled>
@@ -31,8 +33,8 @@ function EstimateCard() {
       </Content>
 
       <Bottom>
-        <button>요청 내역 보기</button>
-        <button>채팅하기</button>
+        <Button>요청 내역 보기</Button>
+        <Button outline>채팅하기</Button>
       </Bottom>
     </EstimateCardStyled>
   );
@@ -105,9 +107,7 @@ const Header = styled.div`
 `;
 
 const EstimateCardStyled = styled.article`
-  width: 366px;
   padding: 24px 16px;
-  margin: 24px 16px;
   border: 2px solid #e5e5e5;
   box-sizing: border-box;
   border-radius: 4px;
