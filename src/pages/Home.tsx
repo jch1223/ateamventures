@@ -8,12 +8,7 @@ import Layout from "../layouts/Layout";
 import EstimateCard, { EstimateType } from "../components/EstimateCard";
 
 function Home() {
-  const {
-    data: estimatesData,
-    isLoading,
-    isError,
-    error,
-  } = useFetch(getEstimates);
+  const { data: estimatesData, isError, error } = useFetch(getEstimates);
 
   useEffect(() => {
     if (isError) {
@@ -36,6 +31,7 @@ function Home() {
           <div>상담 중인 요청</div>
         </div>
 
+        {!estimatesData && <NoData>조건에 맞는 견적 요청이 없습니다.</NoData>}
         <EstimatesWrap>
           {estimatesData?.map((estimate: EstimateType) => {
             return <EstimateCard key={estimate.id} estimateData={estimate} />;
@@ -45,6 +41,16 @@ function Home() {
     </Layout>
   );
 }
+
+const NoData = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  border: 1px solid ${({ theme }) => theme.palette.darkenGray};
+  border-radius: 4px;
+  color: ${({ theme }) => theme.palette.gray};
+`;
 
 const EstimatesWrap = styled.section`
   display: grid;
