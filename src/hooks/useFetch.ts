@@ -4,7 +4,7 @@ function useFetch(request: any) {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [error, setError] = useState<any>(false);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     let isMount = true;
@@ -17,9 +17,9 @@ function useFetch(request: any) {
           setData(await request());
           setIsLoading(false);
         }
-      } catch (error) {
-        setIsError(true);
+      } catch (error: any) {
         setError(error);
+        setIsError(true);
         setIsLoading(false);
       }
     })();
