@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { getEstimates } from "../api/requests";
@@ -7,6 +7,10 @@ import useFetch from "../hooks/useFetch";
 import Layout from "../layouts/Layout";
 import EstimateCard, { EstimateType } from "../components/EstimateCard";
 import Select from "../components/Select";
+
+import refreshImg from "../assets/images/refresh.png";
+
+const METHODS = ["밀링", "선반"];
 
 function Home() {
   const { data: estimatesData, isError, error } = useFetch(getEstimates);
@@ -25,6 +29,11 @@ function Home() {
     console.log(filteredMaterial);
   }, [filteredMethod, filteredMaterial]);
 
+  const resetFiltered = () => {
+    setFilteredMethod([]);
+    setFilteredMaterial([]);
+  };
+
   return (
     <Layout>
       <TopContent>
@@ -33,19 +42,28 @@ function Home() {
       </TopContent>
 
       <article>
-        <div>
-          <Select
-            summary="가공방식"
-            options={["밀링", "선반"]}
-            filteredOptionsHandler={(data) => setFilteredMethod(data)}
-          />
-          <Select
-            summary="재료"
-            options={["알루미늄", "탄소강", "구리", "합금강", "강철"]}
-            filteredOptionsHandler={(data) => setFilteredMaterial(data)}
-          />
+        <section>
+          <SelectWrap>
+            <div>
+              <Select
+                summary="가공방식"
+                options={METHODS}
+                filteredOptionsHandler={(data) => setFilteredMethod(data)}
+              />
+              <Select
+                summary="재료"
+                options={["알루미늄", "탄소강", "구리", "합금강", "강철"]}
+                filteredOptionsHandler={(data) => setFilteredMaterial(data)}
+              />
+            </div>
+            <FilteringReset onClick={resetFiltered}>
+              <img src={refreshImg} alt="refresh" />
+              <span>필터링 리셋</span>
+            </FilteringReset>
+          </SelectWrap>
+
           <div>상담 중인 요청</div>
-        </div>
+        </section>
 
         {!estimatesData && <NoData>조건에 맞는 견적 요청이 없습니다.</NoData>}
         <EstimatesWrap>
@@ -57,6 +75,24 @@ function Home() {
     </Layout>
   );
 }
+
+const FilteringReset = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 24px;
+  cursor: pointer;
+
+  span {
+    margin-left: 12px;
+    margin-bottom: 2px;
+    font-size: 12px;
+    color: ${({ theme }) => theme.palette.blue};
+  }
+`;
+
+const SelectWrap = styled.div`
+  display: flex;
+`;
 
 const NoData = styled.div`
   display: flex;
