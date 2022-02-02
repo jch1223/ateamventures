@@ -164,6 +164,10 @@ const FilteringReset = styled.div`
 
 const SelectWrap = styled.div`
   display: flex;
+
+  @media only screen and (max-width: 768px) {
+    margin-bottom: 20px;
+  }
 `;
 
 const FilterStyled = styled.section`
@@ -171,6 +175,11 @@ const FilterStyled = styled.section`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+
+  @media only screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const NoData = styled.div`
@@ -187,6 +196,10 @@ const EstimatesWrap = styled.section`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+
+  @media only screen and (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 
 const TopContent = styled.section`
