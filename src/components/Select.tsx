@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import React, { useEffect, useRef, useState } from "react";
+import styled, { css } from "styled-components";
 
 import arrowImg from "../assets/images/arrow.png";
+import whiteArrowImg from "../assets/images/white-arrow.png";
 
 interface SelectProps {
   summary: string;
@@ -14,6 +15,7 @@ function Select({ summary, options, filteredOptionsHandler }: SelectProps) {
   const [checkedList, setCheckedList] = useState(
     Array(options.length).fill(false)
   );
+  const countChecked = checkedList.filter((item) => item).length;
 
   const select = useRef<HTMLDivElement>(null);
 
@@ -47,8 +49,18 @@ function Select({ summary, options, filteredOptionsHandler }: SelectProps) {
 
   return (
     <SelectWrap ref={select}>
-      <SelectStyled onClick={() => setShowOption(!showOption)}>
-        <span>{summary}</span> <img src={arrowImg} alt="arrow drop down" />
+      <SelectStyled
+        isFiltered={!!countChecked}
+        onClick={() => setShowOption(!showOption)}
+      >
+        <span>
+          {summary}
+          {!!countChecked && `(${countChecked})`}
+        </span>
+        <img
+          src={!countChecked ? arrowImg : whiteArrowImg}
+          alt="arrow drop down"
+        />
       </SelectStyled>
 
       {showOption && (
@@ -110,13 +122,25 @@ const OptionWrap = styled.div`
   position: relative;
 `;
 
-const SelectStyled = styled.div`
+const SelectStyled = styled.div<{ isFiltered: boolean }>`
   padding: 6px 14px;
   background: ${({ theme }) => theme.palette.white};
   border: 1px solid ${({ theme }) => theme.palette.gray};
   border-radius: 4px;
   font-family: Roboto;
   cursor: pointer;
+
+  ${({ isFiltered, theme }) => {
+    if (isFiltered) {
+      return css`
+        background: ${theme.palette.darkenBlue};
+        color: ${theme.palette.white};
+      `;
+    }
+    return css`
+      background: ${theme.palette.white};
+    `;
+  }}
 
   span {
     font-size: 12px;
@@ -135,6 +159,10 @@ const SelectStyled = styled.div`
 const SelectWrap = styled.div`
   display: inline-flex;
   flex-direction: column;
+
+  & + & {
+    margin-left: 8px;
+  }
 `;
 
 export default Select;
