@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { getEstimates } from "../api/requests";
@@ -6,16 +6,28 @@ import useFetch from "../hooks/useFetch";
 
 import Layout from "../layouts/Layout";
 import EstimateCard, { EstimateType } from "../components/EstimateCard";
-import Select from "../components/Select";
+import Select, { optionDateFor } from "../components/Select";
 
 import refreshImg from "../assets/images/refresh.png";
 
 const METHODS = ["밀링", "선반"];
+const MATERIA = ["알루미늄", "탄소강", "구리", "합금강", "강철"];
 
 function Home() {
   const { data: estimatesData, isError, error } = useFetch(getEstimates);
-  const [filteredMethod, setFilteredMethod] = useState<string[]>([]);
-  const [filteredMaterial, setFilteredMaterial] = useState<string[]>([]);
+  const [methodData, setMethodData] = useState(optionDateFor(METHODS));
+  const [materiaData, setMaterialData] = useState(optionDateFor(MATERIA));
+
+  const filter = useMemo(() => {
+    return {
+      method: Object.keys(methodData).filter(
+        (value) => methodData[value].checked
+      ),
+      materia: Object.keys(materiaData).filter(
+        (value) => materiaData[value].checked
+      ),
+    };
+  }, [methodData, materiaData]);
 
   useEffect(() => {
     if (isError) {
@@ -24,14 +36,9 @@ function Home() {
     }
   }, [isError, error]);
 
-  useEffect(() => {
-    console.log(filteredMethod);
-    console.log(filteredMaterial);
-  }, [filteredMethod, filteredMaterial]);
-
   const resetFiltered = () => {
-    setFilteredMethod([]);
-    setFilteredMaterial([]);
+    setMethodData(optionDateFor(METHODS));
+    setMaterialData(optionDateFor(MATERIA));
   };
 
   return (
@@ -47,19 +54,35 @@ function Home() {
             <div>
               <Select
                 summary="가공방식"
-                options={METHODS}
-                filteredOptionsHandler={(data) => setFilteredMethod(data)}
+                options={methodData}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setMethodData({
+                    ...methodData,
+                    [e.currentTarget.value]: {
+                      checked: e.currentTarget.checked,
+                    },
+                  });
+                }}
               />
               <Select
                 summary="재료"
-                options={["알루미늄", "탄소강", "구리", "합금강", "강철"]}
-                filteredOptionsHandler={(data) => setFilteredMaterial(data)}
+                options={materiaData}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setMaterialData({
+                    ...materiaData,
+                    [e.currentTarget.value]: {
+                      checked: e.currentTarget.checked,
+                    },
+                  });
+                }}
               />
             </div>
-            <FilteringReset onClick={resetFiltered}>
-              <img src={refreshImg} alt="refresh" />
-              <span>필터링 리셋</span>
-            </FilteringReset>
+            {(!!filter.materia.length || !!filter.method.length) && (
+              <FilteringReset onClick={resetFiltered}>
+                <img src={refreshImg} alt="refresh" />
+                <span>필터링 리셋</span>
+              </FilteringReset>
+            )}
           </SelectWrap>
 
           <div>상담 중인 요청</div>
