@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import arrowImg from "../assets/images/arrow.png";
@@ -6,10 +6,14 @@ import arrowImg from "../assets/images/arrow.png";
 interface SelectProps {
   summary: string;
   options: string[];
+  filteredOptionsHandler: (filteredData: string[]) => void;
 }
 
-function Select({ summary, options }: SelectProps) {
+function Select({ summary, options, filteredOptionsHandler }: SelectProps) {
   const [showOption, setShowOption] = useState(false);
+  const [checkedList, setCheckedList] = useState(
+    Array(options.length).fill(false)
+  );
 
   const select = useRef<HTMLDivElement>(null);
 
@@ -27,6 +31,20 @@ function Select({ summary, options }: SelectProps) {
     };
   }, []);
 
+  const handleOnChange = (position: number) => {
+    const updatedCheckedList = checkedList.map((item, index) =>
+      index === position ? !item : item
+    );
+
+    setCheckedList(updatedCheckedList);
+
+    const filteredOptions = options.filter((_, index) => {
+      return updatedCheckedList[index];
+    });
+
+    filteredOptionsHandler(filteredOptions);
+  };
+
   return (
     <SelectWrap ref={select}>
       <SelectStyled onClick={() => setShowOption(!showOption)}>
@@ -36,10 +54,16 @@ function Select({ summary, options }: SelectProps) {
       {showOption && (
         <OptionWrap>
           <OptionStyled>
-            {options.map((item) => {
+            {options.map((item, index) => {
               return (
                 <Label key={item}>
-                  <input type="checkbox" name={item} value={item} />
+                  <input
+                    type="checkbox"
+                    name={summary}
+                    value={item}
+                    checked={checkedList[index]}
+                    onChange={() => handleOnChange(index)}
+                  />
                   <span>{item}</span>
                 </Label>
               );
