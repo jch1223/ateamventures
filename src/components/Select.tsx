@@ -1,21 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEventHandler, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import arrowImg from "../assets/images/arrow.png";
 import whiteArrowImg from "../assets/images/white-arrow.png";
 
-interface SelectProps {
-  summary: string;
-  options: string[];
-  filteredOptionsHandler: (filteredData: string[]) => void;
+interface OptionDataType {
+  [value: string]: { checked: boolean };
 }
 
-function Select({ summary, options, filteredOptionsHandler }: SelectProps) {
+interface SelectProps {
+  summary: string;
+  options: OptionDataType;
+  onChange: ChangeEventHandler;
+}
+
+export const optionDateFor = (data: string[]) => {
+  const result: OptionDataType = {};
+
+  data.forEach((item) => {
+    result[item] = { checked: false };
+  });
+
+  return result;
+};
+
+function Select({ summary, options, onChange }: SelectProps) {
   const [showOption, setShowOption] = useState(false);
-  const [checkedList, setCheckedList] = useState(
-    Array(options.length).fill(false)
-  );
-  const countChecked = checkedList.filter((item) => item).length;
+
+  const countChecked = Object.keys(options).filter(
+    (value) => options[value].checked
+  ).length;
 
   const select = useRef<HTMLDivElement>(null);
 
@@ -32,20 +46,6 @@ function Select({ summary, options, filteredOptionsHandler }: SelectProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const handleOnChange = (position: number) => {
-    const updatedCheckedList = checkedList.map((item, index) =>
-      index === position ? !item : item
-    );
-
-    setCheckedList(updatedCheckedList);
-
-    const filteredOptions = options.filter((_, index) => {
-      return updatedCheckedList[index];
-    });
-
-    filteredOptionsHandler(filteredOptions);
-  };
 
   return (
     <SelectWrap ref={select}>
@@ -66,17 +66,17 @@ function Select({ summary, options, filteredOptionsHandler }: SelectProps) {
       {showOption && (
         <OptionWrap>
           <OptionStyled>
-            {options.map((item, index) => {
+            {Object.keys(options).map((value) => {
               return (
-                <Label key={item}>
+                <Label key={value}>
                   <input
                     type="checkbox"
                     name={summary}
-                    value={item}
-                    checked={checkedList[index]}
-                    onChange={() => handleOnChange(index)}
+                    value={value}
+                    checked={options[value].checked}
+                    onChange={onChange}
                   />
-                  <span>{item}</span>
+                  <span>{value}</span>
                 </Label>
               );
             })}
