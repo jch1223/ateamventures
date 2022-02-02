@@ -6,6 +6,7 @@ import useFetch from "../hooks/useFetch";
 
 import Layout from "../layouts/Layout";
 import EstimateCard, { EstimateType } from "../components/EstimateCard";
+import Select from "../components/Select";
 
 function Home() {
   const { data: estimatesData, isError, error } = useFetch(getEstimates);
@@ -26,8 +27,11 @@ function Home() {
 
       <article>
         <div>
-          <select name="가공방식"></select>
-          <select name="재료"></select>
+          <Select summary="가공방식" options={["밀링", "선반"]} />
+          <Select
+            summary="재료"
+            options={["알루미늄", "탄소강", "구리", "합금강", "강철"]}
+          />
           <div>상담 중인 요청</div>
         </div>
 
