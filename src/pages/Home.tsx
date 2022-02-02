@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { getEstimates } from "../api/requests";
@@ -10,6 +10,8 @@ import Select from "../components/Select";
 
 function Home() {
   const { data: estimatesData, isError, error } = useFetch(getEstimates);
+  const [filteredMethod, setFilteredMethod] = useState<string[]>([]);
+  const [filteredMaterial, setFilteredMaterial] = useState<string[]>([]);
 
   useEffect(() => {
     if (isError) {
@@ -17,6 +19,11 @@ function Home() {
       alert("어플리케이션에 문제가 발생했습니다.");
     }
   }, [isError, error]);
+
+  useEffect(() => {
+    console.log(filteredMethod);
+    console.log(filteredMaterial);
+  }, [filteredMethod, filteredMaterial]);
 
   return (
     <Layout>
@@ -27,10 +34,15 @@ function Home() {
 
       <article>
         <div>
-          <Select summary="가공방식" options={["밀링", "선반"]} />
+          <Select
+            summary="가공방식"
+            options={["밀링", "선반"]}
+            filteredOptionsHandler={(data) => setFilteredMethod(data)}
+          />
           <Select
             summary="재료"
             options={["알루미늄", "탄소강", "구리", "합금강", "강철"]}
+            filteredOptionsHandler={(data) => setFilteredMaterial(data)}
           />
           <div>상담 중인 요청</div>
         </div>
