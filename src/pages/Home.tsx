@@ -9,25 +9,56 @@ import EstimateCard, { EstimateType } from "../components/EstimateCard";
 import Select, { optionDateFor } from "../components/Select";
 
 import refreshImg from "../assets/images/refresh.png";
+import Switch from "../components/Switch";
 
 const METHODS = ["밀링", "선반"];
 const MATERIA = ["알루미늄", "탄소강", "구리", "합금강", "강철"];
 
 function Home() {
-  const { data: estimatesData, isError, error } = useFetch(getEstimates);
+  const {
+    data: estimatesData,
+    isError,
+    error,
+  } = useFetch<EstimateType[]>(getEstimates);
   const [methodData, setMethodData] = useState(optionDateFor(METHODS));
-  const [materiaData, setMaterialData] = useState(optionDateFor(MATERIA));
+  const [materialData, setMaterialData] = useState(optionDateFor(MATERIA));
+  const [statusChecked, setStatusChecked] = useState(false);
 
   const filter = useMemo(() => {
     return {
       method: Object.keys(methodData).filter(
         (value) => methodData[value].checked
       ),
-      materia: Object.keys(materiaData).filter(
-        (value) => materiaData[value].checked
+      material: Object.keys(materialData).filter(
+        (value) => materialData[value].checked
       ),
+      status: statusChecked,
     };
-  }, [methodData, materiaData]);
+  }, [methodData, materialData, statusChecked]);
+
+  const filteredEstimatesData = useMemo(() => {
+    return estimatesData?.filter((estimate) => {
+      if (statusChecked && estimate.status !== "상담중") {
+        return false;
+      }
+
+      for (let i = 0; i < filter.method.length; i++) {
+        const element = filter.method[i];
+        if (!estimate.method.includes(element)) {
+          return false;
+        }
+      }
+
+      for (let i = 0; i < filter.material.length; i++) {
+        const element = filter.material[i];
+        if (!estimate.material.includes(element)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [estimatesData, statusChecked, filter.method, filter.material]);
 
   useEffect(() => {
     if (isError) {
@@ -49,7 +80,7 @@ function Home() {
       </TopContent>
 
       <article>
-        <section>
+        <FilterStyled>
           <SelectWrap>
             <div>
               <Select
@@ -66,10 +97,10 @@ function Home() {
               />
               <Select
                 summary="재료"
-                options={materiaData}
+                options={materialData}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setMaterialData({
-                    ...materiaData,
+                    ...materialData,
                     [e.currentTarget.value]: {
                       checked: e.currentTarget.checked,
                     },
@@ -77,7 +108,7 @@ function Home() {
                 }}
               />
             </div>
-            {(!!filter.materia.length || !!filter.method.length) && (
+            {(!!filter.material.length || !!filter.method.length) && (
               <FilteringReset onClick={resetFiltered}>
                 <img src={refreshImg} alt="refresh" />
                 <span>필터링 리셋</span>
@@ -85,12 +116,20 @@ function Home() {
             )}
           </SelectWrap>
 
-          <div>상담 중인 요청</div>
-        </section>
+          <SwitchWrap>
+            <Switch
+              isChecked={statusChecked}
+              onClick={() => setStatusChecked(!statusChecked)}
+            />
+            <span>상담 중인 요청만 보기</span>
+          </SwitchWrap>
+        </FilterStyled>
 
-        {!estimatesData && <NoData>조건에 맞는 견적 요청이 없습니다.</NoData>}
+        {!filteredEstimatesData?.length && (
+          <NoData>조건에 맞는 견적 요청이 없습니다.</NoData>
+        )}
         <EstimatesWrap>
-          {estimatesData?.map((estimate: EstimateType) => {
+          {filteredEstimatesData?.map((estimate: EstimateType) => {
             return <EstimateCard key={estimate.id} estimateData={estimate} />;
           })}
         </EstimatesWrap>
@@ -98,6 +137,16 @@ function Home() {
     </Layout>
   );
 }
+
+const SwitchWrap = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+
+  label {
+    margin-right: 16px;
+  }
+`;
 
 const FilteringReset = styled.div`
   display: flex;
@@ -115,6 +164,13 @@ const FilteringReset = styled.div`
 
 const SelectWrap = styled.div`
   display: flex;
+`;
+
+const FilterStyled = styled.section`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 `;
 
 const NoData = styled.div`
