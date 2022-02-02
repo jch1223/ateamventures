@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import logoImg from "../assets/images/logo.png";
-import menuImg from "../assets/images/menu.png";
 import vectorImg from "../assets/images/vector.png";
+import Hamburger from "../components/Hamburger";
 
 function Header() {
   const [width, setWidth] = useState(window.innerWidth);
@@ -12,6 +12,7 @@ function Header() {
     function handleWindowSizeChange() {
       setWidth(window.innerWidth);
     }
+    console.log(window.innerHeight);
 
     window.addEventListener("resize", handleWindowSizeChange);
     return () => {
@@ -22,7 +23,7 @@ function Header() {
   return (
     <HeaderStyled>
       <LogoWrap>
-        {width < 720 && <img src={menuImg} alt="menu" />}
+        {width < 720 && <Hamburger />}
         <img src={logoImg} alt="logo" />
       </LogoWrap>
 
